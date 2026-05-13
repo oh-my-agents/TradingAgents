@@ -1,5 +1,6 @@
 from typing import Optional
 import datetime
+import os
 import typer
 import questionary
 from pathlib import Path
@@ -500,7 +501,7 @@ def get_user_selections():
         create_question_box(
             "Step 1: Ticker Symbol",
             "Enter the exact ticker symbol to analyze, including exchange suffix when needed (examples: SPY, CNC.TO, 7203.T, 0700.HK)",
-            "SPY",
+            "NVDA",
         )
     )
     selected_ticker = get_ticker()
@@ -648,7 +649,7 @@ def get_ticker():
         console.print("\n[red]No ticker symbol provided. Exiting...[/red]")
         raise typer.Exit(1)
 
-    return (ticker.strip() or "SPY").upper()
+    return (ticker.strip() or "NVDA").upper()
 
 
 def get_analysis_date():
@@ -970,7 +971,11 @@ def run_analysis(checkpoint: bool = False):
     config["max_risk_discuss_rounds"] = selections["research_depth"]
     config["quick_think_llm"] = selections["shallow_thinker"]
     config["deep_think_llm"] = selections["deep_thinker"]
-    config["backend_url"] = selections["backend_url"]
+    # Only apply the CLI's provider-hardcoded URL when backend_url has not been
+    # configured explicitly (env var TRADINGAGENTS_LLM_BACKEND_URL or a direct
+    # source edit in default_config.py both leave config["backend_url"] non-None).
+    if config.get("backend_url") is None:
+        config["backend_url"] = selections["backend_url"]
     config["llm_provider"] = selections["llm_provider"].lower()
     # Provider-specific thinking configuration
     config["google_thinking_level"] = selections.get("google_thinking_level")
