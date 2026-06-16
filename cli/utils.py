@@ -59,7 +59,7 @@ def get_ticker() -> str:
         console.print("\n[red]No ticker symbol provided. Exiting...[/red]")
         exit(1)
 
-    return normalize_ticker_symbol(ticker) if ticker.strip() else "SPY"
+    return normalize_ticker_symbol(ticker) if ticker.strip() else "SPCX"
 
 
 def normalize_ticker_symbol(ticker: str) -> str:
